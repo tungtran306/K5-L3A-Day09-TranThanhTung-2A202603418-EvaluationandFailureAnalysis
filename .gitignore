@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+src/reports/*
+!src/reports/baseline_v1.json
+!src/reports/eval_fixed.json
+!src/reports/eval_seeded_regression.json
+!src/reports/README.md
+src/traces/
+*.sqlite
