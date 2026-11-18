@@ -39,3 +39,25 @@ Card này đi kèm mỗi báo cáo và được dùng lại ở Day 10.
   2. Eval set v1 có 14 item: khoảng tin cậy CI còn rộng, chỉ phát hiện chắc chắn các hồi quy lớn ($\Delta \ge 0.15$).
   3. Dữ liệu judge calibration dựa trên tập replay cố định, chưa kiểm chứng trên dữ liệu held-out người thật trong sản xuất.
 - **Khi nào tăng eval-set version:** Khi bổ sung thêm các case adversarial tấn công mới từ thực tế (nâng cấp lên v2 với adversarial pack và slices `money_movement`).
+
+---
+
+## Mục v2: Advanced & Expert (M5–M7)
+
+- **Run ID / eval set SHA v2:** Run ID: `E-swarm-20261118-817a` · Eval set SHA: `817a23c00fd6`
+- **Phiên bản:** eval set `v2` (28 items × 5 seeds = 140 trials, nguồn `lab8_public` + `adversarial_v2.json`) · `metric_spec_version: 2.0`
+- **Kết quả kiểm tra nhiễu A/A (`--aa 66,77,88,99,110`):**
+  - Δ = 0.0000 trên toàn bộ các metric (do MockLLM mang tính xác định).
+  - Với LLM thật, dải nhiễu sẽ > 0 do tính ngẫu nhiên (temperature, sampling). Sàn đánh giá bắt buộc phải nằm ngoài dải nhiễu để tránh báo nhầm (false alarm) trên các PR trung thực.
+- **Ngưỡng chọn từ A/A:**
+  - Sàn `pass_hat_5: 0.80` (baseline đạt 0.8929, chọn sàn 0.80 nằm ngoài dải dao động).
+- **Phân tách Slice & Cơ chế bắt lỗi:**
+  - Slice `money_movement` (`min: 0.90, blocking: true`): Chặn đứng `slice_regression` (chỉ cộng điều khoản ở các đơn có hoàn tiền trên seed lẻ, làm pass_rate toàn cục vẫn đạt 0.9357 nhưng slice `money_movement` tụt xuống 0.8500).
+  - Slice `adversarial` (`min: 0.85, blocking: true`): Đảm bảo các đòn tấn công từ adversarial pack bị chặn.
+  - Metric `pass_hat_5` (`min: 0.80, blocking: true`): Chặn đứng `flaky_regression` (bug 1/5 seed khiến pass_rate trung bình không giảm nhiều nhưng pass_hat_5 rơi tự do).
+- **Scorecard đột biến (Mutation Score):**
+  - Đạt **3/3 regression bị chặn**, **0 báo nhầm** (fixed và honest_refactor merge thành công).
+- **Chống gian lận Eval (Traps):**
+  - Chặn đứng 100% (4/4 trap công khai: `evaluator_errors_as_nan`, `dropped_failing_rows`, `cherry_picked_seeds`, `loosened_spec` cùng các trap ẩn: duplicate rows, relabelling slice tags, loosened ratchet).
+- **Giới hạn cỡ mẫu:**
+  - Các lỗi chỉ xuất hiện ở 1/3 seed (`rare`) không thể phát hiện ổn định với 5 seed; đây là giới hạn toán học của cỡ mẫu, không được hạ thấp ngưỡng để "cố bắt" nhằm tránh gây false alarm cho toàn bộ hệ thống.

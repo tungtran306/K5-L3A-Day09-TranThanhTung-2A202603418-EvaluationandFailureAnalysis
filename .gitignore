@@ -2,8 +2,12 @@ __pycache__/
 *.pyc
 src/reports/*
 !src/reports/baseline_v1.json
+!src/reports/baseline_v2.json
 !src/reports/eval_fixed.json
 !src/reports/eval_seeded_regression.json
+!src/reports/eval_slice_regression.json
 !src/reports/README.md
+!src/reports/traps/
+!src/reports/traps/**
 src/traces/
 *.sqlite
